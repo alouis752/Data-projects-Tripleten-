@@ -1,0 +1,10 @@
+# NYC Airbnb Data
+
+link: https://docs.google.com/spreadsheets/d/1GXZRBMSO994in9k_lvwUvXhs-BvEvIx4T_58FaVeM-w/edit?usp=sharing
+
+The project task was to analyze user data and find the best suggecstion for a new airbnb in New york City. 
+This was accomplished by utilizing google sheets. 
+Given raw data, I organized the data into seperate sheets.
+The data then underwent cleaning and organization to enable analysis.
+Vlookup and pivot tables were utilized to find necessary aggregate data. 
+Multiple charts were created to demonstrate the data visually. 
