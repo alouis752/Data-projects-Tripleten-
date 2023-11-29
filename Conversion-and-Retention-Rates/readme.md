@@ -1,3 +1,5 @@
+# Conversion and Retention Rates
+
 link to project: https://docs.google.com/spreadsheets/d/19LWm10Ytt3XkxdFyFRZ7PR3feckqtzOO3GKvlnbiRVo/edit?usp=sharing
 
 This project utilized Google Sheets to import data regarding online behavior of customers. Conversion to sale and retention rates were viewed
