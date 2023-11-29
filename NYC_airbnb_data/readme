@@ -9,4 +9,6 @@ into seperate sheets.
 My first task in this project was to filter for the columns and rows that were most important for analysis. I eliminated properties taht did not have a review in the past 12 months. I was also
 short term rentals so I eliminated anything with minimum night greater than 7.
 
+I then created a pivot table to calculate the most popular neigborhoods through the use of reviews. 
+
 
