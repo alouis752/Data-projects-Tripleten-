@@ -6,4 +6,7 @@ link to project: https://docs.google.com/spreadsheets/d/1GXZRBMSO994in9k_lvwUvXh
 The project task was to analyze user data and find the best suggecstion for a new airbnb in New york City. This was accomplished by utilizing google sheets. Given raw data, I organized the data 
 into seperate sheets.
 
-My first task in this project was to 
+My first task in this project was to filter for the columns and rows that were most important for analysis. I eliminated properties taht did not have a review in the past 12 months. I was also
+short term rentals so I eliminated anything with minimum night greater than 7.
+
+
