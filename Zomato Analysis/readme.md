@@ -1,9 +1,14 @@
 # Project: Zomato Analysis
-link: https://public.tableau.com/views/ZomatoAnalysis_16996467713010/Dashboard1?:language=en-US&publish=yes&:display_count=n&:origin=viz_share_link
+
+link to project: https://public.tableau.com/views/ZomatoAnalysis_16996467713010/Dashboard1?:language=en-US&publish=yes&:display_count=n&:origin=viz_share_link
 
 
 This program task was to I conducted an analysis on various restaurants. My first action was to clean and organize my data set. I utilized google sheets to aggregate data and split columns to fit my purposes.
 This included spliting cuisine types so each column would only show one. I used pivot tables to find the total sales and quantity of sales in each restaurant.
+
+![image](https://github.com/alouis752/Data-projects-Tripleten-/assets/75276869/c70d050d-bd02-4306-9371-d53f82e77b50)
+
+
 Once I had my data cleaned and organized, I exported my csv to tableau. From there I created a dashboard based on the criteria I was interested in exploring.
 I investigated which restaurants are most popular. 
 I also researched how revenue is impacted by each restaurant. I focused on both sales quantity and sales amount to find the most profitable possibilities. My main focus was on cost, cuisine, location, and rating.
