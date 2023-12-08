@@ -1,3 +1,6 @@
+# Nashville Housing
+
+
 This project utilized SQL to clean data regarding Nashville housing. This dataset included messy factors such as the date not being standardized, Addresses including all info in 1 field, and duplicate rows.
 
 
