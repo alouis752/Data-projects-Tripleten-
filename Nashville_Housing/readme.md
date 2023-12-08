@@ -25,7 +25,7 @@ The next step was to fill in empty property addresses. It was assumed that 2 par
 By joining the data on itself I can compare the columns where parcel id is the same value but the unique ID is not. This was used to set the null values to that which is in the corresponding parcel ID field
 
 
-I then split the address fields into seperate columns. In the original data, the field was combined as "address,city" and "address,city,state". To make analysis easier, The data was split into seperate columns. This was done in 2 different ways:
+I then split the address fields into separate columns. In the original data, the field was combined as "address,city" and "address,city,state". To make analysis easier, The data was split into seperate columns. This was done in 2 different ways:
 
 To handle the property address, which was formatted as "address,city" the substring statement was used:
 
@@ -75,7 +75,7 @@ This was overcome with the statement:
 		ELSE 'Yes'
 		END
 
-Using a case statement, values were changed out to be easier for a viewer to read.
+Using a case statement, values were changed to be easier for a viewer to read.
 
 The next step was to remove duplicate columns. Through analysis, multiple rows had the same data as the one before it. To remedy this, the row_number window function was utilized:
 
