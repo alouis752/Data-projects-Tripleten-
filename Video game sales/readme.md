@@ -4,7 +4,7 @@ link to project: https://public.tableau.com/app/profile/alex.louis8353/viz/Video
 This project presents a Tableau dashboard showcasing insights derived from video game sales data. The primary focus is on analyzing the impact of genres and regions on sales. The dashboard features various visualizations, providing a comprehensive overview of the industry's trends.
 
 1. Sales by Year and Genre 
-A dynamic line graph illustrates the sales trends over the years,colored by different genres. This visualization provides a quick overview of how each genre has evolved in terms of sales.
+A dynamic line graph illustrates the sales trends over the years, colored by different genres. This visualization provides a quick overview of how each genre has evolved in terms of sales.
 
 ![image](https://github.com/alouis752/Data-projects-Tripleten-/assets/75276869/8291fc05-ed94-4724-a7b9-0dab9736584d)
 
