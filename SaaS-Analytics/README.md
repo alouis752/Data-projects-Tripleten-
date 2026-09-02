@@ -168,9 +168,9 @@ SaaS-Analytics/
 │   └── SaaS_Analytics_Dashboard.pbix
 │
 ├── images/
-│   ├── executive-overview.png
-│   ├── customer-health-growth.png
-│   └── sales-performance.png
+│   ├── executive_overview.png
+│   ├── customer_health_growth.png
+│   └── sales_performance.png
 │
 ├── .gitignore
 └── README.md
