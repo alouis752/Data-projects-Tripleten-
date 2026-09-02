@@ -1,0 +1,154 @@
+version: 2
+
+models:
+
+  - name: dim_customers
+    description: One row per customer with firmographic and usage summary attributes.
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+      - name: account_status
+        tests:
+          - accepted_values:
+              values: ['Active', 'Churned', 'Suspended','Trial']
+
+  - name: dim_products
+    description: One row per SaaS product.
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_employees
+    description: One row per employee including sales quota and reporting hierarchy.
+    columns:
+      - name: employee_id
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_sales_orders
+    description: One row per sales order with normalized MRR and ARR metrics.
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+  - name: fct_usage_events
+    description: One row per product usage event.
+    columns:
+      - name: event_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: product_id
+        tests:
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+  - name: fct_subscription_changes
+    description: One row per customer subscription change event.
+    columns:
+      - name: change_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+  - name: fct_support_tickets
+    description: One row per customer support ticket.
+    columns:
+      - name: ticket_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+  - name: fct_payments
+    description: One row per payment record linked to orders and customers.
+    columns:
+      - name: payment_id
+        tests:
+          - unique
+          - not_null
+
+      - name: order_id
+        tests:
+          - relationships:
+              to: ref('fct_sales_orders')
+              field: order_id
+
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+  - name: mart_monthly_mrr
+    description: Monthly aggregated MRR and ARR for BI reporting.
+    columns:
+      - name: month
+        tests:
+          - unique
+          - not_null
+
+  - name: mart_customer_health
+    description: Customer-level health and risk metrics derived from usage, support, payments, and subscription activity.
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: mart_rep_performance
+    description: Sales rep bookings, MRR, ARR, and quota attainment.
+    columns:
+      - name: employee_id
+        tests:
+          - unique
+          - not_null
+
+  - name: mart_cac_ltv
+    description: Monthly customer acquisition cost and lifetime value proxy by signup cohort.
+    columns:
+      - name: month
+        tests:
+          - unique
+          - not_null

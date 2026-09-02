@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: raw
+    database: SAAS_ANALYTICS
+    schema: RAW
+
+    tables:
+      - name: customers
+      - name: products
+      - name: sales_orders
+      - name: usage_events
+      - name: employees
+      - name: subscription_changes
+      - name: marketing_spend
+      - name: support_tickets
+      - name: payments
