@@ -14,27 +14,31 @@ from src.common.validation import validate_dataset
 RUN_DATE = "2026-08-31"
 
 
-DATASETS = {
-    "customers": RAW_DATA_DIR / "customers.csv",
-    "products": RAW_DATA_DIR / "products.csv",
-    "orders": RAW_DATA_DIR / "orders.json",
-    "order_items": RAW_DATA_DIR / "order_items.json",
-    "payments": RAW_DATA_DIR / "payments.csv",
-    "shipments": RAW_DATA_DIR / "shipments.csv",
-    "returns": RAW_DATA_DIR / "returns.csv",
-    "inventory": (
-        RAW_DATA_DIR
-        / "inventory"
-        / f"snapshot_date={RUN_DATE}"
-        / f"inventory_{RUN_DATE}.csv"
-    ),
-    "web_events": (
-        RAW_DATA_DIR
-        / "web_events"
-        / f"event_date={RUN_DATE}"
-        / f"web_events_{RUN_DATE}.json"
-    ),
-}
+def get_datasets(
+    run_date: str,
+) -> dict[str, Path]:
+
+    return {
+        "customers": RAW_DATA_DIR / "customers.csv",
+        "products": RAW_DATA_DIR / "products.csv",
+        "orders": RAW_DATA_DIR / "orders.json",
+        "order_items": RAW_DATA_DIR / "order_items.json",
+        "payments": RAW_DATA_DIR / "payments.csv",
+        "shipments": RAW_DATA_DIR / "shipments.csv",
+        "returns": RAW_DATA_DIR / "returns.csv",
+        "inventory": (
+            RAW_DATA_DIR
+            / "inventory"
+            / f"snapshot_date={run_date}"
+            / f"inventory_{run_date}.csv"
+        ),
+        "web_events": (
+            RAW_DATA_DIR
+            / "web_events"
+            / f"event_date={run_date}"
+            / f"web_events_{run_date}.json"
+        ),
+    }
 
 
 def read_dataset(
@@ -66,7 +70,7 @@ def validate_batch(
     )
     print("-" * 60)
 
-    for dataset_name, file_path in DATASETS.items():
+    for dataset_name, file_path in get_datasets(run_date).items():
 
         if not file_path.exists():
 

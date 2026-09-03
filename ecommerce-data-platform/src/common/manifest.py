@@ -1,6 +1,6 @@
 import hashlib
 import json
-from datetime import datetime, timezone
+
 from pathlib import Path
 
 import pandas as pd
@@ -55,11 +55,6 @@ def build_manifest(
 
     return {
         "run_date": run_date,
-        "generated_at_utc": (
-            datetime.now(
-                timezone.utc
-            ).isoformat()
-        ),
         "dataset_count": len(records),
         "datasets": records,
     }
