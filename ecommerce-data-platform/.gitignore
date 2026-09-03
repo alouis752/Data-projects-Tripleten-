@@ -1,0 +1,30 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# dbt
+target/
+dbt_packages/
+profiles.yml
+
+# Airflow
+airflow/logs/
+airflow/airflow.db
+
+# Keys / credentials
+*.key
+*.pem
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Generated data
+data/
