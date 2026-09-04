@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: raw
+    database: ECOMMERCE_DATA_PLATFORM
+    schema: RAW
+
+    tables:
+      - name: customers
+      - name: products
+      - name: orders
+      - name: order_items
+      - name: payments
+      - name: shipments
+      - name: returns
+      - name: inventory
+      - name: web_events

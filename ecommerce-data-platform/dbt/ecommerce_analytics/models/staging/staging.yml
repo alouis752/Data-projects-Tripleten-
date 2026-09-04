@@ -1,0 +1,242 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: Cleaned staging model for customer records from the RAW layer.
+
+    columns:
+      - name: customer_id
+        description: Unique identifier for each customer.
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_name
+        tests:
+          - not_null
+
+      - name: email
+        tests:
+          - not_null
+
+      - name: status
+        tests:
+          - not_null
+
+  - name: stg_products
+    description: Cleaned staging model for product records from the RAW layer.
+
+    columns:
+      - name: product_id
+        description: Unique identifier for each product.
+        tests:
+          - not_null
+          - unique
+
+      - name: product_name
+        tests:
+          - not_null
+
+      - name: category
+        tests:
+          - not_null
+
+      - name: price
+        tests:
+          - not_null
+
+      - name: cost
+        tests:
+          - not_null
+  - name: stg_orders
+    description: Cleaned staging model for e-commerce orders.
+
+    columns:
+      - name: order_id
+        description: Unique identifier for each order.
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+      - name: order_ts
+        tests:
+          - not_null
+
+      - name: status
+        tests:
+          - not_null
+
+  - name: stg_order_items
+    description: Cleaned staging model for individual line items within orders.
+
+    columns:
+      - name: order_item_id
+        description: Unique identifier for each order line.
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+
+      - name: quantity
+        tests:
+          - not_null
+
+      - name: unit_price
+        tests:
+          - not_null
+  - name: stg_payments
+    description: Cleaned staging model for payment attempts associated with orders.
+
+    columns:
+      - name: payment_id
+        description: Unique identifier for each payment attempt.
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+
+      - name: amount
+        tests:
+          - not_null
+
+      - name: payment_method
+        tests:
+          - not_null
+
+      - name: payment_status
+        tests:
+          - not_null
+
+      - name: payment_ts
+        tests:
+          - not_null
+
+
+  - name: stg_shipments
+    description: Cleaned staging model for shipments associated with fulfilled orders.
+
+    columns:
+      - name: shipment_id
+        description: Unique identifier for each shipment.
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+
+      - name: shipped_at
+        tests:
+          - not_null
+
+      - name: carrier
+        tests:
+          - not_null
+  - name: stg_returns
+    description: Cleaned staging model for product returns associated with delivered orders.
+
+    columns:
+      - name: return_id
+        description: Unique identifier for each return.
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+
+      - name: returned_at
+        tests:
+          - not_null
+
+      - name: return_amount
+        tests:
+          - not_null
+
+      - name: return_reason
+        tests:
+          - not_null
+
+
+  - name: stg_inventory
+    description: Cleaned staging model for inventory snapshots by product.
+
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+
+      - name: snapshot_ts
+        tests:
+          - not_null
+
+      - name: quantity_on_hand
+        tests:
+          - not_null
+
+      - name: reorder_point
+        tests:
+          - not_null
+  
+  - name: stg_web_events
+    description: Cleaned staging model for website activity and customer funnel events.
+
+    columns:
+      - name: event_id
+        description: Unique identifier for each web event.
+        tests:
+          - not_null
+          - unique
+
+      - name: session_id
+        tests:
+          - not_null
+
+      - name: event_type
+        tests:
+          - not_null
+
+      - name: traffic_source
+        tests:
+          - not_null
+
+      - name: event_ts
+        tests:
+          - not_null

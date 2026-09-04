@@ -296,6 +296,37 @@ if __name__ == "__main__":
         / "manifest.json"
     )
 
-    upload_validated_batch(
+def upload_batch(
+    run_date: str = "2026-08-31",
+) -> dict:
+    """
+    Build the manifest path for a specific batch date
+    and upload that validated batch to S3.
+
+    This wrapper is useful because Airflow can call it
+    directly without needing to manually construct a Path.
+    """
+
+    manifest_path = (
+        Path("data")
+        / "raw"
+        / "manifests"
+        / f"run_date={run_date}"
+        / "manifest.json"
+    )
+
+    return upload_validated_batch(
         manifest_path=manifest_path
     )
+
+
+def main():
+    """
+    Manual command-line entry point.
+    """
+
+    upload_batch()
+
+
+if __name__ == "__main__":
+    main()
