@@ -28,3 +28,11 @@ Thumbs.db
 
 # Generated data
 data/
+
+# dbt generated files
+dbt/**/target/
+dbt/**/logs/
+dbt/**/dbt_packages/
+
+# Runtime logs
+logs/

@@ -75,6 +75,64 @@ EXPECTED_COLUMNS = {
 }
 
 
+REQUIRED_FIELDS = {
+    "customers": {
+        "customer_id",
+        "customer_name",
+        "email",
+        "created_at",
+    },
+    "products": {
+        "product_id",
+        "product_name",
+        "price",
+        "cost",
+    },
+    "orders": {
+        "order_id",
+        "customer_id",
+        "order_ts",
+        "status",
+    },
+    "order_items": {
+        "order_item_id",
+        "order_id",
+        "product_id",
+        "quantity",
+        "unit_price",
+    },
+    "payments": {
+        "payment_id",
+        "order_id",
+        "payment_status",
+        "payment_ts",
+    },
+    "shipments": {
+        "shipment_id",
+        "order_id",
+        "shipped_at",
+    },
+    "returns": {
+        "return_id",
+        "order_id",
+        "returned_at",
+        "return_amount",
+    },
+    "inventory": {
+        "product_id",
+        "snapshot_ts",
+        "quantity_on_hand",
+    },
+    "web_events": {
+        "event_id",
+        "session_id",
+        "event_type",
+        "traffic_source",
+        "event_ts",
+    },
+}
+
+
 def validate_columns(
     df: pd.DataFrame,
     dataset_name: str,
@@ -117,9 +175,39 @@ def validate_not_empty(
 ) -> list[str]:
 
     if df.empty:
-        return ["Dataset contains no records."]
+        return [
+            "Dataset contains no records."
+        ]
 
     return []
+
+
+def validate_required_fields(
+    df: pd.DataFrame,
+    dataset_name: str,
+) -> list[str]:
+
+    errors = []
+
+    required_fields = REQUIRED_FIELDS.get(
+        dataset_name,
+        set(),
+    )
+
+    for field in required_fields:
+
+        if field not in df.columns:
+            continue
+
+        null_count = df[field].isna().sum()
+
+        if null_count > 0:
+            errors.append(
+                f"Required field '{field}' "
+                f"contains {null_count} null value(s)."
+            )
+
+    return errors
 
 
 def validate_file_exists(
@@ -147,6 +235,13 @@ def validate_dataset(
 
     errors.extend(
         validate_columns(
+            df,
+            dataset_name,
+        )
+    )
+
+    errors.extend(
+        validate_required_fields(
             df,
             dataset_name,
         )

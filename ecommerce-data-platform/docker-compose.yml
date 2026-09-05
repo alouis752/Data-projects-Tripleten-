@@ -40,6 +40,8 @@ services:
       - ./data:/opt/airflow/data
       - C:/Users/bigal/.aws:/home/airflow/.aws:ro
       - ./sql:/opt/airflow/sql:ro
+      - ./dbt/ecommerce_analytics:/opt/airflow/dbt/ecommerce_analytics
+      - C:/Users/bigal/.dbt/profiles.yml:/opt/airflow/.dbt/profiles.yml:ro
     ports:
       - "8080:8080"
 

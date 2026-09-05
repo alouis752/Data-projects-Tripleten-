@@ -1,0 +1,524 @@
+version: 2
+
+models:
+
+  # ==========================================================
+  # 1. FACT ORDERS
+  # Grain: One row per order
+  # ==========================================================
+
+  - name: fct_orders
+    description: >
+      Central order-level fact table containing order financials,
+      payment activity, fulfillment activity, and returns.
+
+    columns:
+      - name: order_id
+        description: Unique identifier for each order.
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+      - name: order_date
+        tests:
+          - not_null
+
+      - name: gross_order_amount
+        tests:
+          - not_null
+
+      - name: net_order_amount
+        tests:
+          - not_null
+
+      - name: net_revenue_after_returns
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # 2. DIM CUSTOMERS
+  # Grain: One row per customer
+  # ==========================================================
+
+  - name: dim_customers
+    description: >
+      Customer dimension containing descriptive attributes used
+      to analyze order activity by customer, region, segment, and status.
+
+    columns:
+      - name: customer_id
+        description: Unique identifier for each customer.
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_name
+        tests:
+          - not_null
+
+      - name: region
+        tests:
+          - not_null
+
+      - name: segment
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # 3. DIM PRODUCTS
+  # Grain: One row per product
+  # ==========================================================
+
+  - name: dim_products
+    description: >
+      Product dimension containing descriptive product attributes
+      used for product and category-level analysis.
+
+    columns:
+      - name: product_id
+        description: Unique identifier for each product.
+        tests:
+          - not_null
+          - unique
+
+      - name: product_name
+        tests:
+          - not_null
+
+      - name: category
+        tests:
+          - not_null
+
+      - name: price
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # 4. DIM DATE
+  # Grain: One row per calendar date
+  # ==========================================================
+
+  - name: dim_date
+    description: >
+      Calendar dimension used for consistent date-based analysis
+      across fact tables and BI reporting.
+
+    columns:
+      - name: date_day
+        description: Unique calendar date.
+        tests:
+          - not_null
+          - unique
+
+      - name: year
+        tests:
+          - not_null
+
+      - name: month_number
+        tests:
+          - not_null
+
+      - name: month_name
+        tests:
+          - not_null
+
+      - name: day_of_week_name
+        tests:
+          - not_null
+
+      - name: is_weekend
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # 5. FACT ORDER ITEMS
+  # Grain: One row per order item
+  # ==========================================================
+
+  - name: fct_order_items
+    description: >
+      Order-item-level fact table used for product-level sales
+      and revenue analysis.
+
+    columns:
+      - name: order_item_id
+        description: Unique identifier for each order line.
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fct_orders')
+              field: order_id
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+      - name: order_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_day
+
+      - name: quantity
+        tests:
+          - not_null
+
+      - name: net_item_amount
+        tests:
+          - not_null
+
+  # ==========================================================
+  # 6. FACT INVENTORY
+  # Grain: One row per product per inventory snapshot
+  # ==========================================================
+
+  - name: fct_inventory
+    description: >
+      Inventory snapshot fact table used to analyze inventory
+      levels and identify products at or below their reorder point.
+
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+      - name: snapshot_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_day
+
+      - name: quantity_on_hand
+        tests:
+          - not_null
+
+      - name: reorder_point
+        tests:
+          - not_null
+
+      - name: is_below_reorder_point
+        tests:
+          - not_null
+
+  # ==========================================================
+  # 7. FACT WEB EVENTS
+  # Grain: One row per web event
+  # ==========================================================
+
+  - name: fct_web_events
+    description: >
+      Web event fact table used for traffic-source,
+      product-engagement, and conversion-funnel analysis.
+
+    columns:
+      - name: event_id
+        description: Unique identifier for each web event.
+        tests:
+          - not_null
+          - unique
+
+      - name: session_id
+        tests:
+          - not_null
+
+      - name: event_type
+        tests:
+          - not_null
+
+      - name: product_id
+        description: >
+          Product associated with the event when applicable.
+          May be null for events such as search.
+        tests:
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+      - name: traffic_source
+        tests:
+          - not_null
+
+      - name: event_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_day
+
+
+  # ==========================================================
+  # 8. MART DAILY SALES
+  # Grain: One row per calendar date
+  # ==========================================================
+
+  - name: mart_daily_sales
+    description: >
+      Daily sales summary used for revenue, order-volume,
+      customer-volume, return, and average-order-value analysis.
+
+    columns:
+      - name: order_date
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('dim_date')
+              field: date_day
+
+      - name: order_count
+        tests:
+          - not_null
+
+      - name: customer_count
+        tests:
+          - not_null
+
+      - name: gross_order_value
+        tests:
+          - not_null
+
+      - name: net_order_value
+        tests:
+          - not_null
+
+      - name: net_revenue_after_returns
+        tests:
+          - not_null
+
+      - name: average_paid_order_value
+
+
+  # ==========================================================
+  # 9. MART PRODUCT PERFORMANCE
+  # Grain: One row per product
+  # ==========================================================
+
+  - name: mart_product_performance
+    description: >
+      Product-level sales and profitability summary used to
+      analyze revenue, units sold, discounts, profit, and margin.
+
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+      - name: product_name
+        tests:
+          - not_null
+
+      - name: category
+        tests:
+          - not_null
+
+      - name: order_count
+        tests:
+          - not_null
+
+      - name: units_sold
+        tests:
+          - not_null
+
+      - name: gross_revenue
+        tests:
+          - not_null
+
+      - name: net_revenue
+        tests:
+          - not_null
+
+      - name: gross_profit
+        tests:
+          - not_null
+
+      - name: gross_margin_pct
+        tests:
+          - not_null
+
+  - name: mart_web_funnel
+    description: >
+      Daily web engagement and conversion metrics by traffic source.
+      Funnel metrics represent sessions containing each event type.
+
+    columns:
+      - name: event_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_day
+
+      - name: traffic_source
+        tests:
+          - not_null
+
+      - name: total_sessions
+        tests:
+          - not_null
+
+      - name: view_sessions
+        tests:
+          - not_null
+
+      - name: search_sessions
+        tests:
+          - not_null
+
+      - name: add_to_cart_sessions
+        tests:
+          - not_null
+
+      - name: checkout_sessions
+        tests:
+          - not_null
+
+      - name: purchase_sessions
+        tests:
+          - not_null
+
+      - name: session_conversion_rate
+        tests:
+          - not_null
+
+
+
+  - name: mart_inventory_health
+    description: >
+      Product inventory health based on current inventory
+      and trailing 30-day sales velocity.
+
+    columns:
+      - name: snapshot_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_day
+
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+      - name: product_name
+        tests:
+          - not_null
+
+      - name: category
+        tests:
+          - not_null
+
+      - name: quantity_on_hand
+        tests:
+          - not_null
+
+      - name: reorder_point
+        tests:
+          - not_null
+
+      - name: is_below_reorder_point
+        tests:
+          - not_null
+
+      - name: units_sold_30d
+        tests:
+          - not_null
+
+      - name: avg_daily_units_sold_30d
+        tests:
+          - not_null
+
+      - name: days_of_supply
+
+  - name: mart_customer_performance
+    description: >
+      Customer-level performance metrics using observed
+      order, payment, and return history.
+
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: customer_name
+        tests:
+          - not_null
+
+      - name: region
+        tests:
+          - not_null
+
+      - name: segment
+        tests:
+          - not_null
+
+      - name: status
+        tests:
+          - not_null
+
+      - name: total_orders
+        tests:
+          - not_null
+
+      - name: paid_orders
+        tests:
+          - not_null
+
+      - name: lifetime_order_value
+        tests:
+          - not_null
+
+      - name: lifetime_recognized_revenue
+        tests:
+          - not_null
+
+      - name: lifetime_return_amount
+        tests:
+          - not_null
+
+      - name: lifetime_net_revenue
+        tests:
+          - not_null
+
+      - name: average_paid_order_value

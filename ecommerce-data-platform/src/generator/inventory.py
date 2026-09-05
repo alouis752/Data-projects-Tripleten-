@@ -2,7 +2,7 @@ import random
 from datetime import datetime
 
 import pandas as pd
-
+from pathlib import Path
 from src.common.config import (
     DEFAULT_INVENTORY_MAX_QUANTITY,
     DEFAULT_INVENTORY_MIN_QUANTITY,
@@ -50,19 +50,8 @@ def generate_inventory_snapshot(
 
 def save_inventory_snapshot(
     df: pd.DataFrame,
+    output_dir: Path = RAW_DATA_DIR,
 ) -> None:
-
-    snapshot_date = (
-        df["snapshot_ts"]
-        .min()
-        .date()
-    )
-
-    output_dir = (
-        RAW_DATA_DIR
-        / "inventory"
-        / f"snapshot_date={snapshot_date}"
-    )
 
     output_dir.mkdir(
         parents=True,
@@ -71,12 +60,13 @@ def save_inventory_snapshot(
 
     output_path = (
         output_dir
-        / f"inventory_{snapshot_date}.csv"
+        / "inventory.csv"
     )
 
     df.to_csv(
         output_path,
         index=False,
+        lineterminator="\n",
     )
 
     print(

@@ -1,6 +1,6 @@
 import random
 from datetime import timedelta
-
+from pathlib import Path
 import pandas as pd
 
 from src.common.config import (
@@ -59,7 +59,7 @@ def generate_shipments(
 
         shipment = {
             "shipment_id": (
-                f"SHIP-{len(shipment_records) + 1:07d}"
+                f"SHIP-{order['order_id']}"
             ),
             "order_id": order["order_id"],
             "shipped_at": shipped_at,
@@ -84,27 +84,23 @@ def generate_shipments(
 
 def save_shipments(
     df: pd.DataFrame,
+    output_dir: Path = RAW_DATA_DIR,
 ) -> None:
 
-    RAW_DATA_DIR.mkdir(
+    output_dir.mkdir(
         parents=True,
         exist_ok=True,
     )
 
-    output_path = (
-        RAW_DATA_DIR
-        / "shipments.csv"
-    )
+    output_path = output_dir / "shipments.csv"
 
     df.to_csv(
         output_path,
         index=False,
+        lineterminator="\n",
     )
 
-    print(
-        f"Saved {len(df):,} shipments to:"
-    )
-
+    print(f"Saved {len(df):,} shipments to:")
     print(output_path)
 
 

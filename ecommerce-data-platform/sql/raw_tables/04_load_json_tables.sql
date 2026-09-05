@@ -17,9 +17,10 @@ FROM (
         $1:status::VARCHAR,
         $1:channel::VARCHAR,
         METADATA$FILENAME
-    FROM @ECOMMERCE_S3_STAGE/raw/orders/run_date=2026-08-31/
+    FROM @ECOMMERCE_S3_STAGE/raw/orders/run_date={{ params.run_date }}/
 )
 FILE_FORMAT = JSON_FORMAT;
+
 
 COPY INTO ORDER_ITEMS (
     ORDER_ITEM_ID,
@@ -39,9 +40,10 @@ FROM (
         $1:unit_price::NUMBER(10,2),
         $1:discount::NUMBER(10,2),
         METADATA$FILENAME
-    FROM @ECOMMERCE_S3_STAGE/raw/order_items/run_date=2026-08-31/
+    FROM @ECOMMERCE_S3_STAGE/raw/order_items/run_date={{ params.run_date }}/
 )
 FILE_FORMAT = JSON_FORMAT;
+
 
 COPY INTO WEB_EVENTS (
     EVENT_ID,
@@ -61,12 +63,26 @@ FROM (
         $1:traffic_source::VARCHAR,
         $1:event_ts::TIMESTAMP_NTZ,
         METADATA$FILENAME
-    FROM @ECOMMERCE_S3_STAGE/raw/web_events/run_date=2026-08-31/
+    FROM @ECOMMERCE_S3_STAGE/raw/web_events/run_date={{ params.run_date }}/
 )
 FILE_FORMAT = JSON_FORMAT;
 
-SELECT 'ORDERS' AS TABLE_NAME, COUNT(*) AS ROW_COUNT FROM ORDERS
+
+SELECT
+    'ORDERS' AS TABLE_NAME,
+    COUNT(*) AS ROW_COUNT
+FROM ORDERS
+
 UNION ALL
-SELECT 'ORDER_ITEMS', COUNT(*) FROM ORDER_ITEMS
+
+SELECT
+    'ORDER_ITEMS',
+    COUNT(*)
+FROM ORDER_ITEMS
+
 UNION ALL
-SELECT 'WEB_EVENTS', COUNT(*) FROM WEB_EVENTS;
+
+SELECT
+    'WEB_EVENTS',
+    COUNT(*)
+FROM WEB_EVENTS;

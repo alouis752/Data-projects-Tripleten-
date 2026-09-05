@@ -19,9 +19,10 @@ FROM (
         $5,
         $6,
         METADATA$FILENAME
-    FROM @ECOMMERCE_S3_STAGE/raw/products/run_date=2026-08-31/
+    FROM @ECOMMERCE_S3_STAGE/raw/products/run_date={{ params.run_date }}/
 )
 FILE_FORMAT = CSV_FORMAT;
+
 
 COPY INTO PAYMENTS (
     PAYMENT_ID,
@@ -41,9 +42,10 @@ FROM (
         $5,
         $6,
         METADATA$FILENAME
-    FROM @ECOMMERCE_S3_STAGE/raw/payments/run_date=2026-08-31/
+    FROM @ECOMMERCE_S3_STAGE/raw/payments/run_date={{ params.run_date }}/
 )
 FILE_FORMAT = CSV_FORMAT;
+
 
 COPY INTO SHIPMENTS (
     SHIPMENT_ID,
@@ -61,9 +63,10 @@ FROM (
         $4,
         $5,
         METADATA$FILENAME
-    FROM @ECOMMERCE_S3_STAGE/raw/shipments/run_date=2026-08-31/
+    FROM @ECOMMERCE_S3_STAGE/raw/shipments/run_date={{ params.run_date }}/
 )
 FILE_FORMAT = CSV_FORMAT;
+
 
 COPY INTO RETURNS (
     RETURN_ID,
@@ -81,9 +84,10 @@ FROM (
         $4,
         $5,
         METADATA$FILENAME
-    FROM @ECOMMERCE_S3_STAGE/raw/returns/run_date=2026-08-31/
+    FROM @ECOMMERCE_S3_STAGE/raw/returns/run_date={{ params.run_date }}/
 )
 FILE_FORMAT = CSV_FORMAT;
+
 
 COPY INTO INVENTORY (
     PRODUCT_ID,
@@ -99,16 +103,40 @@ FROM (
         $3,
         $4,
         METADATA$FILENAME
-    FROM @ECOMMERCE_S3_STAGE/raw/inventory/run_date=2026-08-31/
+    FROM @ECOMMERCE_S3_STAGE/raw/inventory/run_date={{ params.run_date }}/
 )
 FILE_FORMAT = CSV_FORMAT;
 
-SELECT 'PRODUCTS' AS TABLE_NAME, COUNT(*) AS ROW_COUNT FROM PRODUCTS
+
+SELECT
+    'PRODUCTS' AS TABLE_NAME,
+    COUNT(*) AS ROW_COUNT
+FROM PRODUCTS
+
 UNION ALL
-SELECT 'PAYMENTS', COUNT(*) FROM PAYMENTS
+
+SELECT
+    'PAYMENTS',
+    COUNT(*)
+FROM PAYMENTS
+
 UNION ALL
-SELECT 'SHIPMENTS', COUNT(*) FROM SHIPMENTS
+
+SELECT
+    'SHIPMENTS',
+    COUNT(*)
+FROM SHIPMENTS
+
 UNION ALL
-SELECT 'RETURNS', COUNT(*) FROM RETURNS
+
+SELECT
+    'RETURNS',
+    COUNT(*)
+FROM RETURNS
+
 UNION ALL
-SELECT 'INVENTORY', COUNT(*) FROM INVENTORY;
+
+SELECT
+    'INVENTORY',
+    COUNT(*)
+FROM INVENTORY;

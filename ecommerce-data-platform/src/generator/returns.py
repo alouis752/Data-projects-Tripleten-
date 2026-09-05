@@ -2,7 +2,7 @@ import random
 from datetime import timedelta
 
 import pandas as pd
-
+from pathlib import Path
 from src.common.config import (
     RANDOM_SEED,
     RAW_DATA_DIR,
@@ -95,7 +95,7 @@ def generate_returns(
 
         return_record = {
             "return_id": (
-                f"RET-{len(returns) + 1:07d}"
+                 f"RET-{shipment['order_id']}"
             ),
             "order_id": shipment["order_id"],
             "returned_at": returned_at,
@@ -116,26 +116,23 @@ def generate_returns(
 
 def save_returns(
     df: pd.DataFrame,
+    output_dir: Path = RAW_DATA_DIR,
 ) -> None:
 
-    RAW_DATA_DIR.mkdir(
+    output_dir.mkdir(
         parents=True,
         exist_ok=True,
     )
 
-    output_path = (
-        RAW_DATA_DIR
-        / "returns.csv"
-    )
+    output_path = output_dir / "returns.csv"
 
     df.to_csv(
         output_path,
         index=False,
+        lineterminator="\n",
     )
 
-    print(
-        f"Saved {len(df):,} returns to:"
-    )
+    print(f"Saved {len(df):,} returns to:")
     print(output_path)
 
 

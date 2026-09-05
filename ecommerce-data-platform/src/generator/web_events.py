@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 import pandas as pd
-
+from pathlib import Path
 from src.common.config import (
     DEFAULT_WEB_EVENT_COUNT,
     RANDOM_SEED,
@@ -46,6 +46,7 @@ TRAFFIC_SOURCE_WEIGHTS = [
 def generate_web_events(
     products_df: pd.DataFrame,
     count: int = DEFAULT_WEB_EVENT_COUNT,
+    run_date: str = "2026-08-31",
 ) -> pd.DataFrame:
 
     random.seed(RANDOM_SEED + 4)
@@ -54,17 +55,26 @@ def generate_web_events(
 
     product_ids = products_df["product_id"].tolist()
 
-    start_time = datetime(2026, 8, 31)
-    end_time = datetime(2026, 8, 31, 23, 59, 59)
+    start_time = datetime.fromisoformat(
+        f"{run_date}T00:00:00"
+    )
+
+    end_time = datetime.fromisoformat(
+        f"{run_date}T23:59:59"
+    )
 
     range_seconds = int(
         (end_time - start_time).total_seconds()
     )
 
+    date_key = datetime.fromisoformat(
+        run_date
+    ).strftime("%Y%m%d")
+    
     session_count = max(1, count // 5)
 
     session_ids = [
-        f"SESSION-{number:08d}"
+        f"SESSION-{date_key}-{number:06d}"
         for number in range(1, session_count + 1)
     ]
 
@@ -89,7 +99,7 @@ def generate_web_events(
             product_id = random.choice(product_ids)
 
         event = {
-            "event_id": f"EVENT-{event_number:010d}",
+            "event_id": f"EVENT-{date_key}-{event_number:06d}",
             "session_id": random.choice(session_ids),
             "event_type": event_type,
             "product_id": product_id,
@@ -106,15 +116,10 @@ def generate_web_events(
     return pd.DataFrame(events)
 
 
-def save_web_events(df: pd.DataFrame) -> None:
-
-    event_date = df["event_ts"].min().date()
-
-    output_dir = (
-        RAW_DATA_DIR
-        / "web_events"
-        / f"event_date={event_date}"
-    )
+def save_web_events(
+    df: pd.DataFrame,
+    output_dir: Path = RAW_DATA_DIR,
+) -> None:
 
     output_dir.mkdir(
         parents=True,
@@ -123,7 +128,7 @@ def save_web_events(df: pd.DataFrame) -> None:
 
     output_path = (
         output_dir
-        / f"web_events_{event_date}.json"
+        / "web_events.json"
     )
 
     df.to_json(
@@ -133,7 +138,9 @@ def save_web_events(df: pd.DataFrame) -> None:
         date_format="iso",
     )
 
-    print(f"Saved {len(df):,} web events to:")
+    print(
+        f"Saved {len(df):,} web events to:"
+    )
     print(output_path)
 
 

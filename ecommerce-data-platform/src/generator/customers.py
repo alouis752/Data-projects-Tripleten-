@@ -1,6 +1,6 @@
 import random
 from datetime import datetime, timedelta
-
+from pathlib import Path
 import pandas as pd
 from faker import Faker
 
@@ -36,11 +36,16 @@ STATUSES = [
 ]
 
 
-def generate_customers(count: int = DEFAULT_CUSTOMER_COUNT) -> pd.DataFrame:
+def generate_customers(
+    count: int = DEFAULT_CUSTOMER_COUNT,
+    run_date: str = "2026-08-31",
+) -> pd.DataFrame:
     customers = []
 
     start_date = datetime(2023, 1, 1)
-    end_date = datetime(2026, 8, 31)
+    end_date = datetime.fromisoformat(run_date)
+
+    
     date_range_days = (end_date - start_date).days
 
     for customer_number in range(1, count + 1):
@@ -71,14 +76,30 @@ def generate_customers(count: int = DEFAULT_CUSTOMER_COUNT) -> pd.DataFrame:
     return pd.DataFrame(customers)
 
 
-def save_customers(df: pd.DataFrame) -> None:
-    RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
+def save_customers(
+    df: pd.DataFrame,
+    output_dir: Path = RAW_DATA_DIR,
+) -> None:
 
-    output_path = RAW_DATA_DIR / "customers.csv"
+    output_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
-    df.to_csv(output_path, index=False)
+    output_path = (
+        output_dir
+        / "customers.csv"
+    )
 
-    print(f"Saved {len(df):,} customers to:")
+    df.to_csv(
+        output_path,
+        index=False,
+        lineterminator="\n",
+    )
+
+    print(
+        f"Saved {len(df):,} customers to:"
+    )
     print(output_path)
 
 

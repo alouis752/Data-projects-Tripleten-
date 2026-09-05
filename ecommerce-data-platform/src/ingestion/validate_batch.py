@@ -1,8 +1,11 @@
 from pathlib import Path
 
 import pandas as pd
-
-from src.common.config import RAW_DATA_DIR
+import json
+from src.common.config import (
+    RAW_DATA_DIR,
+    get_batch_raw_dir,
+)
 from src.common.manifest import (
     build_manifest,
     build_manifest_record,
@@ -18,26 +21,20 @@ def get_datasets(
     run_date: str,
 ) -> dict[str, Path]:
 
+    batch_dir = get_batch_raw_dir(
+        run_date
+    )
+
     return {
-        "customers": RAW_DATA_DIR / "customers.csv",
-        "products": RAW_DATA_DIR / "products.csv",
-        "orders": RAW_DATA_DIR / "orders.json",
-        "order_items": RAW_DATA_DIR / "order_items.json",
-        "payments": RAW_DATA_DIR / "payments.csv",
-        "shipments": RAW_DATA_DIR / "shipments.csv",
-        "returns": RAW_DATA_DIR / "returns.csv",
-        "inventory": (
-            RAW_DATA_DIR
-            / "inventory"
-            / f"snapshot_date={run_date}"
-            / f"inventory_{run_date}.csv"
-        ),
-        "web_events": (
-            RAW_DATA_DIR
-            / "web_events"
-            / f"event_date={run_date}"
-            / f"web_events_{run_date}.json"
-        ),
+        "customers": batch_dir / "customers.csv",
+        "products": batch_dir / "products.csv",
+        "orders": batch_dir / "orders.json",
+        "order_items": batch_dir / "order_items.json",
+        "payments": batch_dir / "payments.csv",
+        "shipments": batch_dir / "shipments.csv",
+        "returns": batch_dir / "returns.csv",
+        "inventory": batch_dir / "inventory.csv",
+        "web_events": batch_dir / "web_events.json",
     }
 
 
@@ -158,8 +155,59 @@ def validate_batch(
 
     return manifest
 
+def enforce_batch_quality(
+    run_date: str = RUN_DATE,
+) -> None:
+    """
+    Fail the pipeline if any dataset in the batch
+    failed validation.
+
+    This function is intentionally called after the
+    S3 upload step so invalid files can first be
+    preserved in the quarantine area.
+    """
+
+    manifest_path = (
+        RAW_DATA_DIR
+        / "manifests"
+        / f"run_date={run_date}"
+        / "manifest.json"
+    )
+
+    if not manifest_path.exists():
+        raise FileNotFoundError(
+            f"Manifest not found: {manifest_path}"
+        )
+
+
+
+    with open(
+        manifest_path,
+        "r",
+        encoding="utf-8",
+    ) as file:
+        manifest = json.load(file)
+
+    invalid_datasets = [
+        dataset["dataset_name"]
+        for dataset in manifest["datasets"]
+        if dataset["validation_status"] != "valid"
+    ]
+
+    if invalid_datasets:
+        raise ValueError(
+            "Batch failed data quality checks. "
+            "Invalid datasets: "
+            f"{', '.join(invalid_datasets)}"
+        )
+
+    print(
+        f"Batch quality gate passed for {run_date}"
+    )
+
+
 def main():
-     validate_batch()
+    validate_batch()
 
 
 if __name__ == "__main__":

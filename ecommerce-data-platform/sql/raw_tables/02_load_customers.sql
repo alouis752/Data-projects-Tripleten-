@@ -22,6 +22,6 @@ FROM (
         $6,
         $7,
         METADATA$FILENAME
-    FROM @ECOMMERCE_S3_STAGE/raw/customers/run_date=2026-08-31/
+    FROM @ECOMMERCE_S3_STAGE/raw/customers/run_date={{ params.run_date }}/
 )
 FILE_FORMAT = CSV_FORMAT;

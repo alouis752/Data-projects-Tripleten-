@@ -2,7 +2,7 @@ import random
 
 import pandas as pd
 from faker import Faker
-
+from pathlib import Path
 from src.common.config import (
     DEFAULT_PRODUCT_COUNT,
     RANDOM_SEED,
@@ -122,12 +122,23 @@ def generate_products(count: int = DEFAULT_PRODUCT_COUNT) -> pd.DataFrame:
     return pd.DataFrame(products)
 
 
-def save_products(df: pd.DataFrame) -> None:
-    RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
+def save_products(
+    df: pd.DataFrame,
+    output_dir: Path = RAW_DATA_DIR,
+) -> None:
 
-    output_path = RAW_DATA_DIR / "products.csv"
+    output_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
-    df.to_csv(output_path, index=False)
+    output_path = output_dir / "products.csv"
+
+    df.to_csv(
+        output_path,
+        index=False,
+        lineterminator="\n",
+    )
 
     print(f"Saved {len(df):,} products to:")
     print(output_path)

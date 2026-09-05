@@ -1,0 +1,116 @@
+version: 2
+
+models:
+
+  # ==========================================================
+  # 1. ORDER ITEMS
+  # Grain: One row per order item
+  # ==========================================================
+
+  - name: int_order_items
+    description: >
+      Calculates gross, discount, and net amounts for each
+      individual order line.
+
+    columns:
+      - name: order_item_id
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # 2. ORDER SUMMARY
+  # Grain: One row per order
+  # ==========================================================
+
+  - name: int_order_summary
+    description: >
+      Aggregates individual order items into one record per order.
+
+    columns:
+      - name: order_id
+        description: Unique identifier for each summarized order.
+        tests:
+          - not_null
+          - unique
+
+      - name: gross_order_amount
+        tests:
+          - not_null
+
+      - name: net_order_amount
+        tests:
+          - not_null
+
+  # ==========================================================
+  # 3. ENRICHED ORDERS
+  # Grain: One row per order
+  # ==========================================================
+
+  - name: int_orders_enriched
+    description: >
+      Combines order attributes with aggregated order-item
+      financial metrics at the order level.
+
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+      - name: net_order_amount
+        tests:
+          - not_null
+
+  # ==========================================================
+  # 4. ORDER LIFECYCLE
+  # Grain: One row per order
+  # ==========================================================
+
+  - name: int_order_lifecycle
+    description: >
+      Summarizes payment, shipment, and return activity into
+      one lifecycle record per order.
+
+    columns:
+      - name: order_id
+        description: Unique identifier for each order.
+        tests:
+          - not_null
+          - unique
+
+      - name: payment_attempt_count
+        tests:
+          - not_null
+
+      - name: successful_payment_amount
+        tests:
+          - not_null
+
+      - name: shipment_count
+        tests:
+          - not_null
+
+      - name: return_count
+        tests:
+          - not_null
+
+      - name: return_amount
+        tests:
+          - not_null
+
+      - name: has_return
+        tests:
+          - not_null

@@ -260,14 +260,13 @@ def upload_validated_batch(
         run_date=run_date,
     )
 
-    manifest_upload_status = (
-        upload_file_idempotent(
-            s3_client=s3_client,
-            file_path=manifest_path,
-            bucket_name=bucket_name,
-            s3_key=manifest_s3_key,
-        )
+    s3_client.upload_file(
+        Filename=str(manifest_path),
+        Bucket=bucket_name,
+        Key=manifest_s3_key,
     )
+
+    manifest_upload_status = "uploaded"
 
     print(
         f"{'manifest':<15} "
@@ -286,15 +285,6 @@ def upload_validated_batch(
     }
 
 
-if __name__ == "__main__":
-
-    manifest_path = (
-        Path("data")
-        / "raw"
-        / "manifests"
-        / "run_date=2026-08-31"
-        / "manifest.json"
-    )
 
 def upload_batch(
     run_date: str = "2026-08-31",

@@ -1,6 +1,6 @@
 import random
 from datetime import timedelta
-
+from pathlib import Path
 import pandas as pd
 
 from src.common.config import (
@@ -67,17 +67,23 @@ def generate_payments(
             2,
         )
 
-        payment_status = random.choices(
-            [
-                "successful",
-                "failed",
-            ],
-            weights=[
-                0.96,
-                0.04,
-            ],
-            k=1,
-        )[0]
+        if order["status"] in {
+            "shipped",
+            "delivered",
+        }:
+            payment_status = "successful"
+        else:
+            payment_status = random.choices(
+                [
+                    "successful",
+                    "failed",
+                ],
+                weights=[
+                    0.96,
+                    0.04,
+                ],
+                k=1,
+            )[0]
 
         payment_amount = (
             order_value
@@ -97,7 +103,7 @@ def generate_payments(
 
         payment = {
             "payment_id": (
-                f"PAY-{len(payments) + 1:08d}"
+            f"PAY-{order['order_id']}"
             ),
             "order_id": order["order_id"],
             "amount": payment_amount,
@@ -121,27 +127,23 @@ def generate_payments(
 
 def save_payments(
     df: pd.DataFrame,
+    output_dir: Path = RAW_DATA_DIR,
 ) -> None:
 
-    RAW_DATA_DIR.mkdir(
+    output_dir.mkdir(
         parents=True,
         exist_ok=True,
     )
 
-    output_path = (
-        RAW_DATA_DIR
-        / "payments.csv"
-    )
+    output_path = output_dir / "payments.csv"
 
     df.to_csv(
         output_path,
         index=False,
+        lineterminator="\n",
     )
 
-    print(
-        f"Saved {len(df):,} payments to:"
-    )
-
+    print(f"Saved {len(df):,} payments to:")
     print(output_path)
 
 
