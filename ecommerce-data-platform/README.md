@@ -1,4 +1,4 @@
-# Northstar Commerce Data Platform
+# eCommerce Data Platform
 
 An end-to-end **data engineering and analytics engineering platform** that simulates a modern e-commerce data environment.
 
@@ -585,7 +585,7 @@ These were intentionally kept outside the scope of the portfolio implementation 
 
 ## Project Outcome
 
-Northstar Commerce demonstrates the complete lifecycle of an analytics platform:
+This eCommerce project demonstrates the complete lifecycle of an analytics platform:
 
 **source generation → validation → cloud storage → warehouse ingestion → transformation → testing → analytics → visualization**
 
